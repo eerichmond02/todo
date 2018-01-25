@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import './App.css';
 
 const Task = (props) => (
-  <div>
-    <button onClick={props.markComplete} className={props.taskId}>Complete</button>
+  <div className="allDivs">
+    <button id="complete" onClick={props.markComplete} className={props.taskId}>Complete</button>
     <input value={props.task.text} readOnly={props.task.editable} className={props.taskId} onBlur={props.onBlurNoEdit} onDoubleClick={props.doubleClickEdit} onChange={props.editTask}></input>
-    <button onClick={props.removeTask} className={props.taskId}>Delete</button>
+    <button id="delete" onClick={props.removeTask} className={props.taskId}>Delete</button>
   </div>
 )
 
@@ -22,21 +22,23 @@ const TaskList = (props) => (
 )
 
 const Input = (props) => (
-  <div>
+  <div className="inpDivs">
     <button id="toggle" onClick={props.toggleTask}>Toggle</button>
     <form onSubmit={props.handleSubmit}>
-      <input type="text" name="inputTask" value={props.inputTask} onChange={props.handleChange}></input>
+      <input id="mainInput" type="text" name="inputTask" value={props.inputTask} onChange={props.handleChange}></input>
     </form>
   </div>
 )
 
 const TodoFooter = (props) => (
-  <div>
-    <span>{props.activeCount()}</span>
-    <button id="all" onClick={props.filter}>all</button>
-    <button id="active" onClick={props.filter}>active</button>
-    <button id="complete" onClick={props.filter}>completed</button>
-    <button id="clear" onClick={props.clearCompleted}>clear completed</button>
+  <div className="allDivs">
+    <span className="tdfooter">{props.activeCount() + " items left."}</span>
+    <div>
+      <button className="tdfooter" id="all" onClick={props.filter}>all</button>
+      <button className="tdfooter" id="active" onClick={props.filter}>active</button>
+      <button className="tdfooter" id="complete" onClick={props.filter}>completed</button>
+    </div>
+    <button className="tdfooter" id="clear" onClick={props.clearCompleted}>clear completed</button>
   </div>
 )
 
@@ -169,8 +171,7 @@ class Todo extends Component {
 
   render() {
     return (
-      <div>
-        <p>Todo class</p>
+      <div className="parentDiv">
         <Input inputTask={this.state.inputTask} handleChange={this.handleChange} handleSubmit={this.handleSubmit} toggleTask={this.toggleTask}/>
         <TaskList taskArr={this.state.taskArr} onBlurNoEdit={this.onBlurNoEdit} doubleClickEdit={this.doubleClickEdit} removeTask={this.removeTask} editTask={this.editTask} markComplete={this.markComplete} filter={this.state.filter}/>  
         <TodoFooter activeCount={this.activeCount} filter={this.filter} clearCompleted={this.clearCompleted} />      
@@ -188,7 +189,7 @@ const App = () => {
       </header>
       <Todo />
       <footer>
-        <p>Footer text!</p>
+        <p className="tdfooter" >Double-click to edit a todo.</p>
       </footer>
     </div>
   );

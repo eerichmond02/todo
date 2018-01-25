@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  font-family: Helvetica, sans-serif
 }
 
 .App-logo {
@@ -18,4 +19,49 @@
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+form {
+  display: inline;
+}
+.parentDiv{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.allDivs{
+  display: flex;
+  border: 1px lightgrey solid;
+  width: 450px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px;
+}
+.inpDivs{
+  display: flex;
+  border: 1px lightgrey solid;
+  width: 450px;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+}
+#mainInput{
+  width: 300px;
+}
+.allDivs > Input {
+  width: 300px;
+  border: none;
+}
+#clear {
+}
+#active {
+  margin: 5px;
+  /* margin-right: 5px;
+  margin-bottom: 5px; */
+}
+.tdfooter {
+  font-size: 10px;
+
+}
+#toggle {
+  margin: 5px;
 }
