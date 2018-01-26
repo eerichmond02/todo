@@ -3,9 +3,10 @@ import './App.css';
 
 const Task = (props) => (
   <div className="allDivs">
-    <button id="complete" onClick={props.markComplete} className={props.taskId}>Complete</button>
-    <input value={props.task.text} readOnly={props.task.editable} className={props.taskId} onBlur={props.onBlurNoEdit} onDoubleClick={props.doubleClickEdit} onChange={props.editTask}></input>
-    <button id="delete" onClick={props.removeTask} className={props.taskId}>Delete</button>
+    <button style={props.task.status === 'complete' ? completeTaskButton : incompleteTaskButton} onClick={props.markComplete} className={props.taskId}></button>
+    <input value={props.task.text} readOnly={props.task.editable} className={props.taskId} style={props.task.status === 'complete' ? strikethroughStyle : plainTextStyle} 
+      onBlur={props.onBlurNoEdit} onDoubleClick={props.doubleClickEdit} onChange={props.editTask}></input>
+    <button style={deleteTaskButton} onClick={props.removeTask} className={props.taskId}>X</button>
   </div>
 )
 
@@ -14,7 +15,8 @@ const TaskList = (props) => (
     if(props.filter === 'all' ||
       (props.filter === 'active' && task.status === 'active')||
       (props.filter === 'complete' && task.status === 'complete')){
-        return (<Task task={task} key={idx} taskId={idx} onBlurNoEdit={props.onBlurNoEdit} doubleClickEdit={props.doubleClickEdit} removeTask={props.removeTask} editTask={props.editTask} markComplete={props.markComplete}/>)
+        return (<Task task={task} key={idx} taskId={idx} onBlurNoEdit={props.onBlurNoEdit} doubleClickEdit={props.doubleClickEdit} removeTask={props.removeTask} 
+          editTask={props.editTask} markComplete={props.markComplete}/>)
       }
       else {return}
     }
@@ -23,34 +25,24 @@ const TaskList = (props) => (
 
 const Input = (props) => (
   <div className="inpDivs">
-    <button id="toggle" onClick={props.toggleTask}>Toggle</button>
+    <button id="toggle" onClick={props.toggleTask}>v</button>
     <form onSubmit={props.handleSubmit}>
-      <input id="mainInput" type="text" name="inputTask" value={props.inputTask} onChange={props.handleChange}></input>
+      <input id="mainInput" placeholder="What needs to be done?" type="text" name="inputTask" value={props.inputTask} onChange={props.handleChange}></input>
     </form>
   </div>
 )
 
 const TodoFooter = (props) => (
   <div className="allDivs">
-    <span className="tdfooter">{props.activeCount() + " items left."}</span>
+    <span className="tdfooter" id="activeCount">{props.activeCount() + " items left"}</span>
     <div>
-      <button className="tdfooter" id="all" onClick={props.filter}>all</button>
-      <button className="tdfooter" id="active" onClick={props.filter}>active</button>
-      <button className="tdfooter" id="complete" onClick={props.filter}>completed</button>
+      <button className="tdfooter" id="all" onClick={props.filter} style={props.filterState === 'all' ? selectedButton : null}>all</button>
+      <button className="tdfooter" id="active" onClick={props.filter} style={props.filterState === 'active' ? selectedButton : null}>active</button>
+      <button className="tdfooter" id="complete" onClick={props.filter} style={props.filterState === 'complete' ? selectedButton : null}>completed</button>
     </div>
     <button className="tdfooter" id="clear" onClick={props.clearCompleted}>clear completed</button>
   </div>
 )
-
-
-class TaskItem {
-  constructor (text){
-    this.text = text;
-    this.status = 'active';
-    this.editable = true;
-  }
-}
-
 
 class Todo extends Component {
   constructor (props) {
@@ -173,8 +165,9 @@ class Todo extends Component {
     return (
       <div className="parentDiv">
         <Input inputTask={this.state.inputTask} handleChange={this.handleChange} handleSubmit={this.handleSubmit} toggleTask={this.toggleTask}/>
-        <TaskList taskArr={this.state.taskArr} onBlurNoEdit={this.onBlurNoEdit} doubleClickEdit={this.doubleClickEdit} removeTask={this.removeTask} editTask={this.editTask} markComplete={this.markComplete} filter={this.state.filter}/>  
-        <TodoFooter activeCount={this.activeCount} filter={this.filter} clearCompleted={this.clearCompleted} />      
+        <TaskList taskArr={this.state.taskArr} onBlurNoEdit={this.onBlurNoEdit} doubleClickEdit={this.doubleClickEdit} removeTask={this.removeTask} 
+        editTask={this.editTask} markComplete={this.markComplete} filter={this.state.filter}/>  
+        <TodoFooter activeCount={this.activeCount} filter={this.filter} filterState={this.state.filter} clearCompleted={this.clearCompleted} />      
       </div>
     );
   }
@@ -193,6 +186,60 @@ const App = () => {
       </footer>
     </div>
   );
+}
+
+
+// objects & styles
+
+class TaskItem {
+  constructor (text){
+    this.text = text;
+    this.status = 'active';
+    this.editable = true;
+  }
+}
+
+const strikethroughStyle = {
+  textDecoration: 'line-through',
+  width: '300px',
+  border: 'none',
+  color: 'lightgray',
+}
+
+const plainTextStyle = {
+  textDecoration: 'none',
+  width: '300px',
+  border: 'none',
+  color: '#404040',
+}
+
+const selectedButton = {
+  border: '.5px solid lightgray',
+}
+
+const incompleteTaskButton = {
+  borderRadius: '50%',
+  backgroundColor: 'white',
+  border: '.5px solid #79d279',
+  width: '15px',
+  height: '15px',
+  marginLeft: '5px',
+  marginRight: '5px',
+}
+
+const completeTaskButton = {
+  borderRadius: '50%',
+  backgroundColor: '#79d279',
+  border: '.5px solid #79d279',
+  width: '15px',
+  height: '15px',
+  marginLeft: '5px',
+  marginRight: '5px',
+}
+
+const deleteTaskButton = {
+  color: '#a82424',
+  marginRight: '5px',
 }
 
 export default App;

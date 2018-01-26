@@ -1,6 +1,12 @@
+body {
+  background-color: #f2f2f2;
+  min-width: 500px;
+}
+
 .App {
   text-align: center;
-  font-family: Helvetica, sans-serif
+  font-family: 'Helvetica Neue', Helvetica, sans-serif;
+  color: #404040;
 }
 
 .App-logo {
@@ -9,7 +15,9 @@
 }
 
 .App-title {
-  font-size: 1.5em;
+  font-size: 2.3em;
+  color: #d6a9a9;
+  font-weight: 300;
 }
 
 .App-intro {
@@ -20,48 +28,92 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
 form {
   display: inline;
 }
+
 .parentDiv{
   display: flex;
   flex-direction: column;
   align-items: center;
 }
+
 .allDivs{
   display: flex;
-  border: 1px lightgrey solid;
+  border: .5px lightgrey solid;
   width: 450px;
   justify-content: space-between;
   align-items: center;
-  padding: 5px;
+  color: #404040;
+  background-color: white;
+  border-top: none;
 }
+
 .inpDivs{
   display: flex;
-  border: 1px lightgrey solid;
+  border: .5px lightgrey solid;
   width: 450px;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  padding: 5px;
+  color: #404040;
+  background-color: white;
 }
+
 #mainInput{
   width: 300px;
+  color: #404040;
+  border: none;
 }
+
 .allDivs > Input {
   width: 300px;
   border: none;
+  color: #404040;
 }
+
 #clear {
+  width: 100px;
 }
+
 #active {
   margin: 5px;
-  /* margin-right: 5px;
-  margin-bottom: 5px; */
 }
+
 .tdfooter {
   font-size: 10px;
 
 }
-#toggle {
+
+#activeCount {
+  width: 100px;
+  text-align: left;
+  padding-left: 5px;
+}
+
+button {
+  color: #404040;
+  background-color: white;
+  border: none;
+}
+
+button:hover {
+  border: .5px solid lightgray;
+}
+
+button:focus {
+  outline: none;
+}
+
+input {
   margin: 5px;
+  flex-grow: 2;
+}
+
+input:focus {
+  outline: none;
+}
+
+input::placeholder {
+  color: lightgrey;
 }
