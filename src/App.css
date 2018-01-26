@@ -48,6 +48,8 @@ form {
   color: #404040;
   background-color: white;
   border-top: none;
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
 
 .inpDivs{
@@ -58,6 +60,8 @@ form {
   align-items: center;
   color: #404040;
   background-color: white;
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
 
 #mainInput{
