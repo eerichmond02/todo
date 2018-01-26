@@ -32,17 +32,21 @@ const Input = (props) => (
   </div>
 )
 
-const TodoFooter = (props) => (
-  <div className="allDivs">
-    <span className="tdfooter" id="activeCount">{props.activeCount() + " items left"}</span>
-    <div>
-      <button className="tdfooter" id="all" onClick={props.filter} style={props.filterState === 'all' ? selectedButton : null}>all</button>
-      <button className="tdfooter" id="active" onClick={props.filter} style={props.filterState === 'active' ? selectedButton : null}>active</button>
-      <button className="tdfooter" id="complete" onClick={props.filter} style={props.filterState === 'complete' ? selectedButton : null}>completed</button>
-    </div>
-    <button className="tdfooter" id="clear" onClick={props.clearCompleted}>clear completed</button>
-  </div>
-)
+const TodoFooter = (props) => {
+  if (props.taskArr.length > 0 ) {
+    return (
+      <div className="allDivs">
+        <span className="tdfooter" id="activeCount">{props.activeCount() + " items left"}</span>
+        <div>
+          <button className="tdfooter" id="all" onClick={props.filter} style={props.filterState === 'all' ? selectedButton : null}>all</button>
+          <button className="tdfooter" id="active" onClick={props.filter} style={props.filterState === 'active' ? selectedButton : null}>active</button>
+          <button className="tdfooter" id="complete" onClick={props.filter} style={props.filterState === 'complete' ? selectedButton : null}>completed</button>
+        </div>
+        <button className="tdfooter" id="clear" onClick={props.clearCompleted}>clear completed</button>
+      </div>
+    );
+  } else {return null;}
+}
 
 class Todo extends Component {
   constructor (props) {
@@ -167,7 +171,7 @@ class Todo extends Component {
         <Input inputTask={this.state.inputTask} handleChange={this.handleChange} handleSubmit={this.handleSubmit} toggleTask={this.toggleTask}/>
         <TaskList taskArr={this.state.taskArr} onBlurNoEdit={this.onBlurNoEdit} doubleClickEdit={this.doubleClickEdit} removeTask={this.removeTask} 
         editTask={this.editTask} markComplete={this.markComplete} filter={this.state.filter}/>  
-        <TodoFooter activeCount={this.activeCount} filter={this.filter} filterState={this.state.filter} clearCompleted={this.clearCompleted} />      
+        <TodoFooter activeCount={this.activeCount} filter={this.filter} filterState={this.state.filter} clearCompleted={this.clearCompleted} taskArr={this.state.taskArr}/>      
       </div>
     );
   }
