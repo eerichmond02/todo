@@ -69,6 +69,9 @@ class Todo extends Component {
     this.onBlurNoEdit = this.onBlurNoEdit.bind(this);
   }
 
+  // Use slice when manituplating arrays! This will copy array instead of pointing
+  // to the same spot in memory. Refactor the code below.
+
   handleChange (e) {
     this.setState({[e.target.name]: e.target.value});
   }
@@ -76,19 +79,19 @@ class Todo extends Component {
   handleSubmit (e) {
     e.preventDefault();
     let newTask = new TaskItem(this.state.inputTask);
-    let newTaskArr = this.state.taskArr;
+    let newTaskArr = this.state.taskArr.slice();
     newTaskArr.push(newTask);
     this.setState({taskArr: newTaskArr, inputTask: ''});
   }
 
   removeTask (e) {
-    let newTaskArr = this.state.taskArr;
+    let newTaskArr = this.state.taskArr.slice();
     newTaskArr.splice(e.target.className, 1);
     this.setState({taskArr: newTaskArr});
   }
 
   markComplete (e) {
-    let newTaskArr = this.state.taskArr;
+    let newTaskArr = this.state.taskArr.slice();
     if(newTaskArr[e.target.className].status === 'complete'){
           newTaskArr[e.target.className].status = 'active'
     }
@@ -142,26 +145,20 @@ class Todo extends Component {
   }
 
   doubleClickEdit(e){
-    let newTask = this.state.taskArr[e.target.className];
-    newTask.editable = false;
-    let newArr = this.state.taskArr;
-    newArr[e.target.className] = newTask;
+    let newArr = this.state.taskArr.slice();
+    newArr[e.target.className].editable = false;
     this.setState({taskArr : newArr})
   }
 
   onBlurNoEdit(e){
-    let newTask = this.state.taskArr[e.target.className];
-    newTask.editable = true;
-    let newArr = this.state.taskArr;
-    newArr[e.target.className] = newTask;
+    let newArr = this.state.taskArr.slice();
+    newArr[e.target.className].editable = true;
     this.setState({taskArr : newArr})
   }
 
   editTask(e){
-    let newTask = this.state.taskArr[e.target.className];
-    newTask.text = e.target.value;
-    let newArr = this.state.taskArr;
-    newArr[e.target.className] = newTask;
+    let newArr = this.state.taskArr.slice();
+    newArr[e.target.className].text = e.target.value;
     this.setState({taskArr : newArr})
   }
 
