@@ -18,7 +18,7 @@ const TaskList = (props) => (
         return (<Task task={task} key={idx} taskId={idx} onBlurNoEdit={props.onBlurNoEdit} doubleClickEdit={props.doubleClickEdit} removeTask={props.removeTask} 
           editTask={props.editTask} markComplete={props.markComplete}/>)
       }
-      else {return}
+      else {return null;}
     }
   )
 )
@@ -76,12 +76,12 @@ class Todo extends Component {
     this.setState({[e.target.name]: e.target.value});
   }
 
+  // use concat here! instead of replacing taskArr in the state
+  // note: concat returns a new array, instead of mutating
   handleSubmit (e) {
     e.preventDefault();
     let newTask = new TaskItem(this.state.inputTask);
-    let newTaskArr = this.state.taskArr.slice();
-    newTaskArr.push(newTask);
-    this.setState({taskArr: newTaskArr, inputTask: ''});
+    this.setState({taskArr: this.state.taskArr.concat(newTask), inputTask: ''});
   }
 
   removeTask (e) {
