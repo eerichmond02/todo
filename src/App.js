@@ -1,12 +1,16 @@
 import React, { Component } from 'react';
 import './App.css';
 
+// local storage
+
+// indicator of editing
+// check box goes away when editing
 const Task = (props) => (
-  <div className="allDivs">
+  <div className={[props.taskId, 'allDivs'].join(' ')} onMouseEnter={props.handleMouseHover} onMouseLeave={props.handleMouseHover} /*className={props.taskId}*/>
     <button style={props.task.status === 'complete' ? completeTaskButton : incompleteTaskButton} onClick={props.markComplete} className={props.taskId}></button>
     <input value={props.task.text} readOnly={props.task.editable} className={props.taskId} style={props.task.status === 'complete' ? strikethroughStyle : plainTextStyle} 
-      onBlur={props.onBlurNoEdit} onDoubleClick={props.doubleClickEdit} onChange={props.editTask}></input>
-    <button style={deleteTaskButton} onClick={props.removeTask} className={props.taskId}>X</button>
+      onBlur={props.onBlurNoEdit} onKeyPress={props.onBlurNoEdit} onDoubleClick={props.doubleClickEdit} onChange={props.editTask}></input>
+    <button style={props.task.hovering ? deleteTaskButton : deleteTaskButtonNone} onClick={props.removeTask} className={props.taskId} id="deleteTask">X</button>
   </div>
 )
 
@@ -16,7 +20,7 @@ const TaskList = (props) => (
       (props.filter === 'active' && task.status === 'active')||
       (props.filter === 'complete' && task.status === 'complete')){
         return (<Task task={task} key={idx} taskId={idx} onBlurNoEdit={props.onBlurNoEdit} doubleClickEdit={props.doubleClickEdit} removeTask={props.removeTask} 
-          editTask={props.editTask} markComplete={props.markComplete}/>)
+          editTask={props.editTask} markComplete={props.markComplete} handleMouseHover={props.handleMouseHover}/>)
       }
       else {return null;}
     }
@@ -25,7 +29,7 @@ const TaskList = (props) => (
 
 const Input = (props) => (
   <div className="inpDivs">
-    <button id="toggle" onClick={props.toggleTask}>v</button>
+    <button id="toggle" onClick={props.toggleTask} style={props.taskArr.length > 0 ? toggleStyle : toggleStyleNone}>v</button>
     <form onSubmit={props.handleSubmit}>
       <input id="mainInput" placeholder="What needs to be done?" type="text" name="inputTask" value={props.inputTask} onChange={props.handleChange}></input>
     </form>
@@ -34,15 +38,16 @@ const Input = (props) => (
 
 const TodoFooter = (props) => {
   if (props.taskArr.length > 0 ) {
+    let activeCount = props.activeCount();
     return (
       <div className="allDivs">
-        <span className="tdfooter" id="activeCount">{props.activeCount() + " items left"}</span>
+        <span className="tdfooter" id="activeCount">{activeCount === 1 ? activeCount + " item left" : activeCount + " items left"}</span>
         <div>
           <button className="tdfooter" id="all" onClick={props.filter} style={props.filterState === 'all' ? selectedButton : null}>all</button>
           <button className="tdfooter" id="active" onClick={props.filter} style={props.filterState === 'active' ? selectedButton : null}>active</button>
           <button className="tdfooter" id="complete" onClick={props.filter} style={props.filterState === 'complete' ? selectedButton : null}>completed</button>
         </div>
-        <button className="tdfooter" id="clear" onClick={props.clearCompleted}>clear completed</button>
+        <button className="tdfooter" style={props.clearedCount() > 0 ? clearStyle : clearStyleNone} onClick={props.clearCompleted}>clear completed</button>
       </div>
     );
   } else {return null;}
@@ -54,19 +59,22 @@ class Todo extends Component {
     this.state = {
       taskArr: [],
       inputTask: '',
-      filter: 'all'
+      filter: 'all',
     }
+
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.removeTask = this.removeTask.bind(this);
     this.markComplete = this.markComplete.bind(this);
     this.activeCount = this.activeCount.bind(this);
+    this.clearedCount = this.clearedCount.bind(this);
     this.filter = this.filter.bind(this);
     this.clearCompleted = this.clearCompleted.bind(this);
     this.toggleTask = this.toggleTask.bind(this);
     this.editTask = this.editTask.bind(this);
     this.doubleClickEdit = this.doubleClickEdit.bind(this);
     this.onBlurNoEdit = this.onBlurNoEdit.bind(this);
+    this.handleMouseHover = this.handleMouseHover.bind(this);
   }
 
   // Use slice when manituplating arrays! This will copy array instead of pointing
@@ -111,6 +119,16 @@ class Todo extends Component {
       return taskCount;
   }
 
+  clearedCount (e) {
+    let taskCount = 0;
+    for(let i=0; i<this.state.taskArr.length; i++){
+      if(this.state.taskArr[i].status === 'complete') {
+        taskCount++;
+      }
+    }
+      return taskCount;    
+  }
+
   filter (e){
     this.setState({filter: e.target.id})
   }
@@ -127,6 +145,8 @@ class Todo extends Component {
 
   toggleTask(e){
     let activeFlag = false;
+    if (e.target.style.color === 'black') { e.target.style.color = 'lightgrey'; } 
+    else { e.target.style.color = 'black'; }
     for(let i = 0 ; i < this.state.taskArr.length ; i++){
       if(this.state.taskArr[i].status === 'active'){
         activeFlag = true;
@@ -145,30 +165,49 @@ class Todo extends Component {
   }
 
   doubleClickEdit(e){
+    e.preventDefault();
+    let target = e.target;
     let newArr = this.state.taskArr.slice();
-    newArr[e.target.className].editable = false;
-    this.setState({taskArr : newArr})
+    newArr[target.className].editable = false;
+    this.setState({taskArr : newArr}, function() {
+      target.focus();
+    }); 
   }
 
   onBlurNoEdit(e){
-    let newArr = this.state.taskArr.slice();
-    newArr[e.target.className].editable = true;
-    this.setState({taskArr : newArr})
+    if (e.which === 13 || e.which === undefined) {
+      let newArr = this.state.taskArr.slice();
+      newArr[e.target.className].editable = true;
+      this.setState({taskArr : newArr});
+      e.target.blur();
+    }
   }
 
   editTask(e){
-    let newArr = this.state.taskArr.slice();
-    newArr[e.target.className].text = e.target.value;
-    this.setState({taskArr : newArr})
+    if (e.target.value.trim() === '') {
+      this.removeTask(e);
+    } else {
+      let newArr = this.state.taskArr.slice();
+      newArr[e.target.className].text = e.target.value;
+      this.setState({taskArr : newArr});
+    }
   }
+
+  handleMouseHover(e) {
+    let position = e.target.classList[0];
+    let newArr = this.state.taskArr.slice();
+    newArr[position].hovering = !newArr[position].hovering;
+    this.setState({taskArr : newArr});
+  }
+
 
   render() {
     return (
       <div className="parentDiv">
-        <Input inputTask={this.state.inputTask} handleChange={this.handleChange} handleSubmit={this.handleSubmit} toggleTask={this.toggleTask}/>
+        <Input inputTask={this.state.inputTask} handleChange={this.handleChange} handleSubmit={this.handleSubmit} toggleTask={this.toggleTask} taskArr={this.state.taskArr}/>
         <TaskList taskArr={this.state.taskArr} onBlurNoEdit={this.onBlurNoEdit} doubleClickEdit={this.doubleClickEdit} removeTask={this.removeTask} 
-        editTask={this.editTask} markComplete={this.markComplete} filter={this.state.filter}/>  
-        <TodoFooter activeCount={this.activeCount} filter={this.filter} filterState={this.state.filter} clearCompleted={this.clearCompleted} taskArr={this.state.taskArr}/>      
+        editTask={this.editTask} markComplete={this.markComplete} filter={this.state.filter} handleMouseHover={this.handleMouseHover}/>  
+        <TodoFooter activeCount={this.activeCount} clearedCount={this.clearedCount} filter={this.filter} filterState={this.state.filter} clearCompleted={this.clearCompleted} taskArr={this.state.taskArr}/>      
       </div>
     );
   }
@@ -189,7 +228,6 @@ const App = () => {
   );
 }
 
-
 // objects & styles
 
 class TaskItem {
@@ -197,6 +235,7 @@ class TaskItem {
     this.text = text;
     this.status = 'active';
     this.editable = true;
+    this.hovering = false;
   }
 }
 
@@ -241,6 +280,31 @@ const completeTaskButton = {
 const deleteTaskButton = {
   color: '#a82424',
   marginRight: '5px',
+  display: 'block',
+}
+
+const deleteTaskButtonNone = {
+  color: '#a82424',
+  marginRight: '5px',
+  display: 'none',
+}
+
+const clearStyle = {
+  width: '100px',
+  visibility: 'visible',
+}
+
+const clearStyleNone = {
+  width: '100px',
+  visibility: 'hidden',
+}
+
+const toggleStyle = {
+  visibility: 'visible'
+}
+
+const toggleStyleNone = {
+  visibility: 'hidden'
 }
 
 export default App;

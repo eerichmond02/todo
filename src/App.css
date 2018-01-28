@@ -76,10 +76,6 @@ form {
   color: #404040;
 }
 
-#clear {
-  width: 100px;
-}
-
 #active {
   margin: 5px;
 }
@@ -120,4 +116,13 @@ input:focus {
 
 input::placeholder {
   color: lightgrey;
+}
+
+#toggle {
+  color: lightgray;
+}
+
+#deleteTask:hover {
+  border: none;
+  font-weight: bold;
 }
