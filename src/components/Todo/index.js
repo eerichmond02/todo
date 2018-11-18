@@ -1,16 +1,10 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 import TaskList from '../TaskList';
 import TodoFooter from '../TodoFooter';
 import TodoInput from '../TodoInput';
 
-class TaskItem {
-  constructor (text){
-    this.text = text;
-    this.status = 'active';
-    this.editable = true;
-    this.hovering = false;
-  }
-}
+const apiGatewayUrl = 'https://tz90egdoq6.execute-api.us-east-1.amazonaws.com/test';
 
 class Todo extends Component {
   constructor (props) {
@@ -30,10 +24,71 @@ class Todo extends Component {
     this.filter = this.filter.bind(this);
     this.clearCompleted = this.clearCompleted.bind(this);
     this.toggleTask = this.toggleTask.bind(this);
-    this.editTask = this.editTask.bind(this);
-    this.doubleClickEdit = this.doubleClickEdit.bind(this);
-    this.onBlurNoEdit = this.onBlurNoEdit.bind(this);
+    this.getTodoItems = this.getTodoItems.bind(this);
+    this.newTodoItem = this.newTodoItem.bind(this);
+    this.deleteTodoItem = this.deleteTodoItem.bind(this);
     this.handleMouseHover = this.handleMouseHover.bind(this);
+  }
+
+  componentDidMount() {
+    this.getTodoItems();
+  }
+
+  getTodoItems() {
+    axios({
+      method: 'get',
+      url: apiGatewayUrl
+    })
+    .then((response) => {
+      let taskArr = response.data.map(task => ({
+        id: task.todoId,
+        text: task.text,
+        dateTime: task.dateTime,
+        status: 'active',
+        hovering: false,
+      }));
+      taskArr.sort((a, b) => {
+        if (a.dateTime < b.dateTime) {
+          return -1;
+        } else if (a.dateTime > b.dateTime) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
+      this.setState({ taskArr, inputTask: '' });
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+  }
+
+  newTodoItem(text) {
+    axios({
+      method: 'post',
+      url: apiGatewayUrl,
+      data: { text }
+    })
+    .then((response) => {
+      this.getTodoItems();
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+  }
+
+  deleteTodoItem(todoId) {
+    axios({
+      method: 'delete',
+      url: apiGatewayUrl,
+      data: { todoId }
+    })
+    .then((response) => {
+      this.getTodoItems();
+    })
+    .catch((err) => {
+      console.log(err);
+    })
   }
 
   handleChange (e) {
@@ -42,23 +97,22 @@ class Todo extends Component {
 
   handleSubmit (e) {
     e.preventDefault();
-    let newTask = new TaskItem(this.state.inputTask);
-    this.setState({taskArr: this.state.taskArr.concat(newTask), inputTask: ''});
+    this.newTodoItem(this.state.inputTask);
   }
 
   removeTask (e) {
-    let newTaskArr = this.state.taskArr.slice();
-    newTaskArr.splice(e.target.className, 1);
-    this.setState({taskArr: newTaskArr});
+    console.log(e.target);
+    this.deleteTodoItem(e.target.id);
   }
 
   markComplete (e) {
+    const pos = this.state.taskArr.findIndex(task => task.id === e.target.id)
     let newTaskArr = this.state.taskArr.slice();
-    if(newTaskArr[e.target.className].status === 'complete') {
-      newTaskArr[e.target.className].status = 'active'
+    if(newTaskArr[pos].status === 'complete') {
+      newTaskArr[pos].status = 'active'
     }
     else{
-      newTaskArr[e.target.className].status = 'complete';
+      newTaskArr[pos].status = 'complete';
     }
     this.setState({taskArr: newTaskArr});
   }
@@ -88,13 +142,11 @@ class Todo extends Component {
   }
 
   clearCompleted (e){
-    let newArr = [];
-
-    newArr = this.state.taskArr.filter(task => {
-      return task.status === 'active';
-    });
-
-    this.setState({taskArr: newArr});
+    this.state.taskArr.forEach(task => {
+      if(task.status === 'complete') {
+        this.deleteTodoItem(task.id);
+      }
+    })
   }
 
   toggleTask(e){
@@ -118,39 +170,40 @@ class Todo extends Component {
     this.setState({taskArr : newArr});
   }
 
-  doubleClickEdit(e){
-    e.preventDefault();
-    let target = e.target;
-    let newArr = this.state.taskArr.slice();
-    newArr[target.className].editable = false;
-    this.setState({taskArr : newArr}, function() {
-      target.focus();
-    });
-  }
+  // doubleClickEdit(e){
+  //   e.preventDefault();
+  //   let target = e.target;
+  //   let newArr = this.state.taskArr.slice();
+  //   newArr[target.className].editable = false;
+  //   this.setState({taskArr : newArr}, function() {
+  //     target.focus();
+  //   });
+  // }
 
-  onBlurNoEdit(e){
-    if (e.which === 13 || e.which === undefined) {
-      let newArr = this.state.taskArr.slice();
-      newArr[e.target.className].editable = true;
-      this.setState({taskArr : newArr});
-      e.target.blur();
-    }
-  }
+  // onBlurNoEdit(e){
+  //   if (e.which === 13 || e.which === undefined) {
+  //     let newArr = this.state.taskArr.slice();
+  //     newArr[e.target.className].editable = true;
+  //     this.setState({taskArr : newArr});
+  //     e.target.blur();
+  //   }
+  // }
 
-  editTask(e){
-    if (e.target.value.trim() === '') {
-      this.removeTask(e);
-    } else {
-      let newArr = this.state.taskArr.slice();
-      newArr[e.target.className].text = e.target.value;
-      this.setState({taskArr : newArr});
-    }
-  }
+  // editTask(e){
+  //   if (e.target.value.trim() === '') {
+  //     this.removeTask(e);
+  //   } else {
+  //     let newArr = this.state.taskArr.slice();
+  //     newArr[e.target.className].text = e.target.value;
+  //     this.setState({taskArr : newArr});
+  //   }
+  // }
 
   handleMouseHover(e) {
-    let position = e.target.classList[0];
+    console.log(e.target);
+    const pos = this.state.taskArr.findIndex(task => task.id === e.target.id)
     let newArr = this.state.taskArr.slice();
-    newArr[position].hovering = !newArr[position].hovering;
+    newArr[pos].hovering = !newArr[pos].hovering;
     this.setState({taskArr : newArr});
   }
 

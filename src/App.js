@@ -9,9 +9,6 @@ const App = () => {
         <h1 className="App-title">todos</h1>
       </header>
       <Todo />
-      <footer>
-        <p className="tdfooter" >Double-click to edit a todo.</p>
-      </footer>
     </div>
   );
 }

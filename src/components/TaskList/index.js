@@ -10,7 +10,8 @@ const TaskList = props => (
           <Task
             task={task}
             key={idx}
-            taskId={idx}
+            taskIdx={idx}
+            taskId={task.id}
             onBlurNoEdit={props.onBlurNoEdit}
             doubleClickEdit={props.doubleClickEdit}
             removeTask={props.removeTask}

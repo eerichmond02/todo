@@ -15,10 +15,12 @@ const TodoInput = props => (
 )
 
 const toggleStyle = {
+  marginLeft: '2px',
   visibility: 'visible'
 }
 
 const toggleStyleNone = {
+  marginLeft: '2px',
   visibility: 'hidden'
 }
 

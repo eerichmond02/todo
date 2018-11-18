@@ -1,15 +1,17 @@
 import React from 'react';
 
 const Task = props => (
-  <div className={[props.taskId, 'allDivs'].join(' ')} onMouseEnter={props.handleMouseHover} onMouseLeave={props.handleMouseHover}>
+  <div className='allDivs' onMouseEnter={props.handleMouseHover} onMouseLeave={props.handleMouseHover} id={props.taskId}>
     <button
       style={props.task.status === 'complete' ? completeTaskButton : incompleteTaskButton}
       onClick={props.markComplete}
-      className={props.taskId} />
+      className={props.taskIdx}
+      id={props.taskId}
+    />
     <input
       value={props.task.text}
-      readOnly={props.task.editable}
-      className={props.taskId}
+      id={props.taskId}
+      readOnly='true'
       style={props.task.status === 'complete' ? strikethroughStyle : plainTextStyle}
       onBlur={props.onBlurNoEdit}
       onKeyPress={props.onBlurNoEdit}
@@ -18,12 +20,13 @@ const Task = props => (
     <button
       style={props.task.hovering ? deleteTaskButton : deleteTaskButtonNone}
       onClick={props.removeTask}
-      className={props.taskId}
-    id="deleteTask">X</button>
+      className={props.taskIdx}
+      id={props.taskId}>X</button>
   </div>
 )
 
 const strikethroughStyle = {
+  cursor: 'default',
   textDecoration: 'line-through',
   width: '300px',
   border: 'none',
@@ -31,6 +34,7 @@ const strikethroughStyle = {
 }
 
 const plainTextStyle = {
+  cursor: 'default',
   textDecoration: 'none',
   width: '300px',
   border: 'none',
